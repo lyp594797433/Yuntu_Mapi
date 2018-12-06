@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: books_borrow (__main__.Yuntu_case)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "E:/Yuntu_Mapi/yuntucase.py", line 20, in books_borrow
+    self.assertEqual(self.obj_test_case.borrow_books("AABCE"), True)
+AssertionError: None != True
+
+----------------------------------------------------------------------
+Ran 1 test in 1.303s
+
+FAILED (failures=1)
