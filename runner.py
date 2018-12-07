@@ -26,7 +26,6 @@ class Runner:
 						WHERE
 							libraryHallCode = "''' +  hallCode + '''" AND isManager = 1
 							AND isEffective = 1'''
-		print(sql_statement)
 		sql_rtn = self.obj_tools.sql_event(sql_statement)
 		return sql_rtn[0]
 

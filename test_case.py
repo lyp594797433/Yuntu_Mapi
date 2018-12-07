@@ -12,6 +12,7 @@ class Test_case(runner.Runner):
 	def borrow_books(self,hallCode):
 		get_allbooks_rtn = self._get_librarybooks(hallCode)
 		print(get_allbooks_rtn)
+		qr_show = obj_tools.qrcode_make(get_allbooks_rtn[:5])
 
 
 
