@@ -234,7 +234,8 @@ class Tools(Singleton):
 					user='test',
 					passwd='123456',
 					charset='utf8',
-					db='bookplatform_test',
+					# db='bookplatform_test',
+					db='bookplatform_dev',
 					cursorclass=pymysql.cursors.DictCursor,
 					connect_timeout=_conn_timeout
 					)
