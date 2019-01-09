@@ -229,13 +229,13 @@ class Tools(Singleton):
 			try:
 				# print('连接数据库中..')
 				conn = pymysql.connect(
-					host='120.77.80.162',
+					host='47.106.130.196',
 					port=3306,
-					user='test',
+					user='root',
 					passwd='123456',
 					charset='utf8',
-					# db='bookplatform_test',
-					db='bookplatform_dev',
+					db='bookplatform_backup',
+					# db='bookplatform_dev',
 					cursorclass=pymysql.cursors.DictCursor,
 					connect_timeout=_conn_timeout
 					)
@@ -496,3 +496,6 @@ class Tools(Singleton):
 			plt.show()
 			plt.close
 			qr.clear() #清除上次生成二维码缓存
+			os.remove("img\%s.png" % (i)) # 删除图片
+
+

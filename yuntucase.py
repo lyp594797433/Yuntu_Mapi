@@ -16,12 +16,16 @@ class Yuntu_case(unittest.TestCase):
 		# driver.close()
 		pass
 	def books_borrow(self):
-		obj_log.info('Add new start................')
-		self.assertEqual(self.obj_test_case.borrow_books("AABCE"), True)
+		obj_log.info('借书开始................')
+		self.assertEqual(self.obj_test_case.borrow_books("AAGXY",byHallCode=1), True)
+	def books_return(self):
+		obj_log.info('还书开始................')
+		self.assertEqual(self.obj_test_case.return_books(idCard=18782019436,hallCode="AAGYC"), True)
 
 def suite():
 	suite = unittest.TestSuite()
-	suite.addTest(Yuntu_case("books_borrow"))
+	# suite.addTest(Yuntu_case("books_borrow"))
+	suite.addTest(Yuntu_case("books_return"))
 	return suite
 
 if __name__ == '__main__':
