@@ -24,8 +24,8 @@ class Yuntu_case(unittest.TestCase):
 
 def suite():
 	suite = unittest.TestSuite()
-	# suite.addTest(Yuntu_case("books_borrow"))
-	suite.addTest(Yuntu_case("books_return"))
+	suite.addTest(Yuntu_case("books_borrow"))
+	# suite.addTest(Yuntu_case("books_return"))
 	return suite
 
 if __name__ == '__main__':

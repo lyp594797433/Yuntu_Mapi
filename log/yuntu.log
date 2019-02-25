@@ -1,5 +1,13 @@
-.
+F
+======================================================================
+FAIL: books_borrow (__main__.Yuntu_case)
 ----------------------------------------------------------------------
-Ran 1 test in 13.237s
+Traceback (most recent call last):
+  File "E:/Yuntu_Mapi/yuntucase.py", line 20, in books_borrow
+    self.assertEqual(self.obj_test_case.borrow_books("AAGXY",byHallCode=1), True)
+AssertionError: None != True
 
-OK
+----------------------------------------------------------------------
+Ran 1 test in 0.588s
+
+FAILED (failures=1)
