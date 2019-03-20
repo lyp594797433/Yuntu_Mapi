@@ -96,7 +96,7 @@ class Runner:
 		if len(str(idCard)) == 18:
 			sql_statement = '''SELECT hallCode,belongLibraryHallCode,barNumber
 							from library_borrower_books 
-							WHERE idCard=''' + str(idCard) + ''' and  borrowState=5'''
+							WHERE reader_id=(SELECT id from reader WHERE idCard=''' + str(idCard)  + ''') and  borrowState=5'''
 		elif len(str(idCard)) == 11:
 			sql_statement = '''SELECT hallCode,
 										belongLibraryHallCode,
@@ -104,15 +104,7 @@ class Runner:
 									FROM
 										library_borrower_books
 									WHERE
-										idCard = (
-											SELECT
-												idCard
-											FROM
-												reader
-											WHERE
-												phone = ''' + str(idCard) + '''
-										)
-									AND borrowState = 5'''
+										reader_id=(SELECT id from reader WHERE phone=''' + str(idCard)  + ''') and  borrowState=5'''
 		else:
 			obj_log.info("idCard或者手机号输入错误，请检查！")
 			return False
