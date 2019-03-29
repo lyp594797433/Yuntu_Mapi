@@ -17,14 +17,14 @@ class Yuntu_case(unittest.TestCase):
 		pass
 	def books_borrow(self):
 		obj_log.info('借书开始................')
-		self.assertEqual(self.obj_test_case.borrow_books("AGZH",byHallCode=1), True)
+		self.assertEqual(self.obj_test_case.borrow_books(hallCode='AAGYK',idCard='13980004762',num=2,byHallCode=1), True)
 	def books_return(self):
 		obj_log.info('还书开始................')
-		self.assertEqual(self.obj_test_case.return_books(idCard=18181417815,), True)
+		self.assertEqual(self.obj_test_case.return_books(idCard=13980004762,isPenalty=True,overduedays=50), True)
 
 def suite():
 	suite = unittest.TestSuite()
-	# suite.addTest(Yuntu_case("books_borrow"))
+	suite.addTest(Yuntu_case("books_borrow"))
 	suite.addTest(Yuntu_case("books_return"))
 	return suite
 
@@ -41,7 +41,7 @@ if __name__ == '__main__':
 	# 	title=u'云图测试报告',
 	# 	description=u'测试用例详细信息'
 	# )
-	unitrunner = unittest.TextTestRunner(fp)
+	unitrunner = unittest.TextTestRunner()
 
 	rtn1 = unitrunner.run(suite())
 	fp.close()

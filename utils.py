@@ -1,5 +1,5 @@
 # -*- coding=utf-8 -*-
-import time,configparser,os,log,sys,re,random,pymysql,simplejson,json
+import time,configparser,os,log,sys,re,random,pymysql,simplejson,json,runner
 import smtplib,traceback,requests,hashlib,json,base64
 from selenium import webdriver
 from progressbar import *
@@ -10,14 +10,14 @@ import matplotlib.pyplot as plt
 obj_log = log.get_logger()
 configfile = 'config.ini'
 to_list = ['18782019436@163.com']
-class Singleton(object):
-    _instance = None
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(Singleton, cls).__new__(
-                            cls, *args, **kwargs)
-        return cls._instance
-class Tools(Singleton):
+# class Singleton(object):
+#     _instance = None
+#     def __new__(cls, *args, **kwargs):
+#         if not cls._instance:
+#             cls._instance = super(Singleton, cls).__new__(
+#                             cls, *args, **kwargs)
+#         return cls._instance
+class Tools():
 	def __init__(self):
 		self.hallCode = "AARH"
 		self.all_config = self.init_allconfig(configfile)
@@ -30,116 +30,6 @@ class Tools(Singleton):
 		# self.add = "39.108.170.48:8081"
 		self.add = "47.106.173.136:8075"
 		self.app_add = "47.106.164.212:18081"
-
-	def call_rest_api(self, API_URL, REQ_TYPE, hallCode=None, username=None,
-					  		password=None, files=None,data_rtn=None, header=True,
-					  		get_err_msg=True, token=None, timeout=None):
-		retry_num = 1
-		retry_interval_time = 10
-		cnt = 0
-		while cnt < retry_num:
-			if token == None:
-				token = self.loginYuntu()
-			else:
-				token = token
-
-			headers = {
-				'token': token,
-				'Content-Type': 'application/json;charset=UTF-8'
-			}
-			try:
-				if data_rtn != None:
-					if REQ_TYPE == "POST":
-						values = json.dumps(data_rtn)
-						# obj_log.info values
-						req = requests.post(API_URL, data=values, headers=headers)
-						print(req)
-					elif REQ_TYPE == "PUT":
-						# obj_log.info API_URL
-						values = json.dumps(data_rtn)
-						req = requests.put(API_URL, data=values, headers=headers,timeout=timeout)
-
-					elif REQ_TYPE == "GET":
-						# obj_log.info API_URL
-						req = requests.get(API_URL, params=data_rtn, headers=headers,timeout=timeout)
-					elif REQ_TYPE == "DELETE":
-						# obj_log.info API_URL
-
-						req = requests.delete(API_URL, params=data_rtn, headers=headers,timeout=timeout)
-				else:
-					if REQ_TYPE == "POST":
-						values = json.dumps(data_rtn)
-						req = requests.post(API_URL, headers=headers)
-
-					elif REQ_TYPE == "PUT":
-						# obj_log.info API_URL
-						req = requests.put(API_URL, headers=headers,timeout=timeout)
-
-					elif REQ_TYPE == "GET":
-						obj_log.info(API_URL)
-						req = requests.get(API_URL, headers=headers, timeout=timeout)
-					elif REQ_TYPE == "DELETE":
-						obj_log.info(API_URL)
-						req = requests.delete(API_URL, headers=headers, timeout=timeout)
-			except Exception as e:
-				if get_err_msg == True:
-					try:
-						return e.read()
-					except Exception:
-						return e
-				continue
-			if str(req.status_code) == "200":
-				rtn_temp = req.text
-				# rtn_temp = str(rtn_temp)
-				# obj_log.info type(rtn_temp)
-				rtn = json.loads(rtn_temp)
-				req.close()
-				return rtn
-			else:
-				obj_log.error("ERROR : Failed to requests API!")
-				time.sleep(retry_interval_time)
-				cnt += 1
-				obj_log.error('retry: %d' % cnt)
-				req.close()
-
-		return False
-
-	def loginYuntu(self, hallCode="",username = '',password=''):
-		REQ_TYPE = "POST"
-		temp_dict = {}
-		if hallCode == "":
-			temp_dict['hallCode'] = self.hallCode
-		else:
-			temp_dict['hallCode'] = hallCode
-		if username == '':
-			temp_dict['username'] = "admin"
-		else:
-			temp_dict['username'] = username
-		temp_dict['forceLogin'] = "True"
-		if password == '':
-			temp_dict['password'] = self.get_md5(self.password)
-		else:
-			temp_dict['password'] = password
-		values = json.dumps(temp_dict)
-		API_URL = "http://" + self.add + "/api/libraryuser/login"
-		print(API_URL)
-		headers = {
-			'Content-Type': 'application/json;charset=UTF-8'
-		}
-		req = requests.post(API_URL, data=values, headers=headers)
-		print(req)
-		if str(req.status_code) == "200":
-			obj_log.info('登录图书馆{}成功.......'.format(hallCode))
-			rtn_temp = req.text
-			rtn = json.loads(str(rtn_temp))
-			rtn = rtn['data']
-			print(rtn)
-			req.close()
-			return rtn
-		else:
-			obj_log.info('登录图书馆{}失败.......'.format(hallCode))
-			return False
-
 
 	def progressbar_k(self, sleep_time):
 		widgets = ['Progress: ', Percentage(), ' ', Bar(marker=RotatingMarker('>-=')),' ', ETA()]
