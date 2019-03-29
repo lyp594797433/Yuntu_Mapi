@@ -25,7 +25,7 @@ class Test_case(runner.Runner):
 		can_borrow_num = reader_info["canBorrowNum"]
 		if can_borrow_num < num:
 			obj_log.info("预期借阅数量{}小于可借数量{}，将执行归还所有书籍操作.".format(num,can_borrow_num))
-			obj_log.info('还书开始................')
+			obj_log.info('还书开始.................')
 			return_books = self.return_books(idCard)
 		# 检查是否有罚金
 		get_reader_penalty = self._getHandlePenaltyInfo(idCard, hallCode)
