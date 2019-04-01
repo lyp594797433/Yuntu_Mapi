@@ -22,6 +22,8 @@ class Test_case(runner.Runner):
 		deposit_count = 0
 		reader_login_info = self._getReaderLoginInfo(condition=idCard,hallCode=hallCode)
 		reader_info = self._getReaderInfoWithHallCode(idCard,hallCode)
+		library_config = self._getLoginUserInfo(hallCode)
+		library_level = library_config['library']['libraryLevel']
 		can_borrow_num = reader_info["canBorrowNum"]
 		if can_borrow_num < num:
 			obj_log.info("预期借阅数量{}小于可借数量{}，将执行归还所有书籍操作.".format(num,can_borrow_num))
@@ -64,12 +66,22 @@ class Test_case(runner.Runner):
 			onlineDeposit = reader_info['readerDeposit']['onlineDeposit']['availableBalance']
 			offlineDeposit = reader_info['readerDeposit']['offlineDeposit']['availableBalance']
 			obj_log.info("读者{}线上押金{}元,在图书馆{}馆押金{}元".format(idCard, onlineDeposit,hallCode,offlineDeposit))
-			if onlineDeposit < deposit_count and offlineDeposit < deposit_count:
-				obj_log.info("图书总共需要押金{}元".format(deposit_count))
-				obj_log.info("押金不足，读者线上与线下的押金都不足，采用在图书馆交馆押金的方式借书.")
-				need_handle_deposit = deposit_count - offlineDeposit
-				need_handle_deposit = float('%.2f' % need_handle_deposit)
-				behalf_pay = self._behalfPay(idCard=idCard, hallCode=hallCode, amount=need_handle_deposit, index=2)
+			if library_level == 18:
+				# 判断图书馆是否为共享书屋--共享书屋只能用线上押金
+				if onlineDeposit < deposit_count:
+					obj_log.info("图书总共需要押金{}元".format(deposit_count))
+					obj_log.info("押金不足，读者线上与线下的押金都不足，采用在图书馆AAGYC代充方式借书.")
+					need_handle_deposit = deposit_count - onlineDeposit
+					need_handle_deposit = float('%.2f' % need_handle_deposit)
+					behalf_pay = self._behalfPay(idCard=idCard, hallCode="AAGYC", amount=need_handle_deposit, index=1)
+
+			else:
+				if onlineDeposit < deposit_count and offlineDeposit < deposit_count:
+					obj_log.info("图书总共需要押金{}元".format(deposit_count))
+					obj_log.info("押金不足，读者线上与线下的押金都不足，采用在图书馆交馆押金的方式借书.")
+					need_handle_deposit = deposit_count - offlineDeposit
+					need_handle_deposit = float('%.2f' % need_handle_deposit)
+					behalf_pay = self._behalfPay(idCard=idCard, hallCode=hallCode, amount=need_handle_deposit, index=2)
 		else:
 			offlineDeposit = reader_info['readerDeposit']['offlineDeposit']['availableBalance']
 			obj_log.info("读者{}在图书馆{}馆押金{}元.".format(idCard, hallCode, offlineDeposit))

@@ -437,3 +437,20 @@ class Runner:
 			get_reader_penalty = self._getHandlePenaltyInfo(idCard, hallCode)
 			obj_log.info("处理读者{}罚金{}成功".format(idCard, penalty))
 		return True
+	
+	def _getLoginUserInfo(self,hallCode):
+		'''
+		:param hallCode
+		管理员登陆管理系统后获取的图书馆配置信息
+		:rtype: dict
+		'''
+		REQ_TYPE = "GET"
+		API_URL = "http://" + self.add + "/api/libraryuser/getLoginUserInfo"
+		token = self.loginYuntu(hallCode)
+		req = self.call_rest_api(API_URL, REQ_TYPE,token=token)
+		if req['status'] == 200:
+			obj_log.info('获取图书馆{}配置信息成功........'.format(hallCode))
+			return req['data']
+		else:
+			obj_log.info('获取图书馆{}配置信息成功........'.format(hallCode))
+			return False
