@@ -1,5 +1,5 @@
 # -*- coding=utf-8 -*-
-import utils,time,log,re,sys,json,simplejson,random,requests
+import utils,time,log,re,sys,json,simplejson,random,requests,datetime
 obj_log = log.get_logger()
 
 class Runner:
@@ -17,8 +17,8 @@ class Runner:
 	def call_rest_api(self, API_URL, REQ_TYPE, hallCode=None, username=None,
 					  		password=None, files=None,data_rtn=None, header=True,
 					  		get_err_msg=True, token=None, timeout=None):
-		retry_num = 1
-		retry_interval_time = 10
+		retry_num = 2
+		retry_interval_time = 5
 		cnt = 0
 		while cnt < retry_num:
 			if token == None:
@@ -152,7 +152,7 @@ class Runner:
 		sql_rtn = self.obj_tools.sql_event(sql_statement)
 		return sql_rtn[0]
 
-	def _get_librarybooks(self,hallCode,bookState=1,byHallCode=1,storeroom=2):
+	def _get_librarybooks(self,hallCode,bookState=1,byHallCode=1,storeroom=3):
 		'''获取图书馆图书.
 		:param hallCode : 图书馆代码
 		:param byHallCode : 本馆： 1，异馆：2 /馆号
@@ -404,6 +404,9 @@ class Runner:
 		if req['status'] == 200:
 			obj_log.info('读者{}在图书馆{}获取图书{}成功........'.format(idCard, stayLibraryHallCode, barNumber))
 			return req['data']
+		elif req['data']['errorCode'] == 2214:
+			obj_log.info("图书{}已被预约！".format(barNumber))
+			return 2214
 		else:
 			obj_log.info('读者{}在图书馆{}获取图书{}失败........'.format(idCard, stayLibraryHallCode, barNumber))
 			return False
@@ -454,3 +457,20 @@ class Runner:
 		else:
 			obj_log.info('获取图书馆{}配置信息成功........'.format(hallCode))
 			return False
+		
+	def _changeBorrowTime(self,overduedays,bookBar_list):
+		obj_log.info("开始修改借书时间为逾期{}天..........".format(overduedays))
+		for book in bookBar_list:
+			delta_days = int(overduedays) + (book['limit_borrow_days']) - 1
+			time_temp = datetime.datetime.now()
+			delta = datetime.timedelta(days=delta_days)
+			n_days = time_temp - delta
+			days_temp = n_days.strftime('%Y-%m-%d %H:%M:%S')
+			update_statement = '''UPDATE library_borrower_books
+									SET borrowTime = ''' + "'" + str(days_temp) + "'" + '''
+									WHERE
+										belongLibraryHallCode = ''' + "'" + str(book['belongLibraryHallCode']) + "'" + '''
+									AND barNumber = ''' + book['barNumber']
+			change_borrowdays = self.obj_tools.sql_event(update_statement)
+			obj_log.info("修改书籍：{}-{}借书时间为：{}成功.".format(book['belongLibraryHallCode'], book['barNumber'], days_temp))
+		
